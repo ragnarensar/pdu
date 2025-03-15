@@ -789,7 +789,7 @@ class Pdu  {
             $result .= $p;
             $p = "";
 
-            switch ($result & 0x0F)
+            switch ($octet_int & 0x0F)
             {
                 case 0:
                     $p = "unknown";
