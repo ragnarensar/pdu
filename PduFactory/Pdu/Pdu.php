@@ -1243,8 +1243,8 @@ class Pdu  {
                 $out['smsc']                = $SMSC_Number;
                 $out['number']              = $sender_number;
                 //$out['toa']                 = $sender_typeOfAddress." ".$this->explain_toa($sender_typeOfAddress);
-				$out['toa']                 = $sender_typeOfAddress;
-				$out['toaDesc']             = $this->explain_toa($sender_typeOfAddress);
+                $out['toa']                 = $sender_typeOfAddress;
+                $out['toaDesc']             = $this->explain_toa($sender_typeOfAddress);
                 $out['timeStamp']           = $timeStamp;
                 //$out['timeStampTimeZone']   = $this->decode_timezone($timezone);
                 $out['tpPid']              = $tp_PID;
