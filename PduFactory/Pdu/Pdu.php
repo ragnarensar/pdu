@@ -1,7 +1,6 @@
 <?php
 namespace Application\Pdu;
 
-
 use Application\Utf8\Utf8;
 use Application\Exception\InvalidArgumentException;
 /*
@@ -118,7 +117,8 @@ class Pdu  {
     public static function getInstance()
     {
         if(null === self::$instance) {
-            self::$instance = new PduUtility();
+            #self::$instance = new PduUtility();
+			self::$instance = new Pdu();
         }
         return self::$instance;
     }
@@ -789,6 +789,7 @@ class Pdu  {
             $result .= $p;
             $p = "";
 
+            //switch ($result & 0x0F)
             switch ($octet_int & 0x0F)
             {
                 case 0:
@@ -991,10 +992,10 @@ class Pdu  {
             {
                 $sender_number =	$this->substring($sender_number, 0,$this->strlen($sender_number)-1);
             }
-            //if (sender_typeOfAddress == 91)
-            //{
-            //	$sender_number = "+" + $sender_number;
-            //}
+            /*if (sender_typeOfAddress == 91)
+            {
+            	$sender_number = "+".$sender_number;
+            }*/
             $start += $sender_addressLength;
 
             $tp_PID = $this->substr($pduString, $start,2);
@@ -1148,10 +1149,10 @@ class Pdu  {
                     {
                         $sender_number =	$this->substring($sender_number,0,$this->strlen($sender_number)-1);
                     }
-                    //if (sender_typeOfAddress == 91)
-                    //{
-                    //	$sender_number = "+" + $sender_number;
-                    //}
+                    /*if (sender_typeOfAddress == 91)
+                    {
+                    	$sender_number = "+".$sender_number;
+                    }*/
                 }
                 $start +=$sender_addressLength;
 
@@ -1174,8 +1175,8 @@ class Pdu  {
                 $seconds = $this->substring($timeStamp,10,12);
                 $timezone = $this->substring($timeStamp,12,14);
 
-                //$timeStamp = $day . "/" . $month . "/" . $year . " " . $hours . ":" . $minutes . ":" . $seconds . " GMT " .$this->decode_timezone($timezone);
-                $timeStamp = new \DateTime($year. '-' . $month . '-' . $day . ' ' . $hours . ':' . $minutes . ':' . $seconds. ' GMT');
+                $timeStamp = $day . "/" . $month . "/" . $year . " " . $hours . ":" . $minutes . ":" . $seconds . " GMT " .$this->decode_timezone($timezone);
+                //$timeStamp = new \DateTime($year. '-' . $month . '-' . $day . ' ' . $hours . ':' . $minutes . ':' . $seconds. ' GMT');
 
                 $start +=14;
 
@@ -1226,7 +1227,13 @@ class Pdu  {
                     $userData = $this->getUserMessage16($skip_characters, $this->substr($pduString,$start,$this->strlen($pduString)-$start),$messageLength);
                 }
 
-                $userData = $this->substr($userData,0,$messageLength);
+                //$userData = $this->substr($userData,0,$messageLength);
+				// Ersetze Zeilenumbrüche durch Leerzeichen
+				$userData = str_replace('\n', ' ', $userData);
+				// Kürze Nachricht auf Länge der im Paket beschriebenen Länge
+				$userData = $this->substr($userData, 0, $messageLength);
+				// Entferne alle Leerzeichen die zu viel sind "        " -> " "
+				$userData = preg_replace('/(\\\s){2,}/', '$1', $userData);
 
                 if ($bitSize==16)
                 {
@@ -1235,9 +1242,11 @@ class Pdu  {
 
                 $out['smsc']                = $SMSC_Number;
                 $out['number']              = $sender_number;
-                $out['toa']                 = $sender_typeOfAddress." ".$this->explain_toa($sender_typeOfAddress);
+                //$out['toa']                 = $sender_typeOfAddress." ".$this->explain_toa($sender_typeOfAddress);
+				$out['toa']                 = $sender_typeOfAddress;
+				$out['toaDesc']             = $this->explain_toa($sender_typeOfAddress);
                 $out['timeStamp']           = $timeStamp;
-                $out['timeStampTimeZone']   = $this->decode_timezone($timezone);
+                //$out['timeStampTimeZone']   = $this->decode_timezone($timezone);
                 $out['tpPid']              = $tp_PID;
                 $out['tpDcs']              = $tp_DCS;
                 $out['tpDcsDesc']         = $tp_DCS_desc;
@@ -1281,10 +1290,10 @@ class Pdu  {
                 {
                     $sender_number =	$this->substring($sender_number,0,$this->strlen($sender_number)-1);
                 }
-                //if (sender_typeOfAddress == 91)
-                //{
-                //	$sender_number = "+" + $sender_number;
-                //}
+                /*if (sender_typeOfAddress == 91)
+                {
+                	$sender_number = "+".$sender_number;
+                }*/
                 $start +=$sender_addressLength;
 
                 $timeStamp = $this->semiOctetToString($this->substr($pduString,$start,14));
@@ -1321,10 +1330,12 @@ class Pdu  {
 
                 $out['smsc']                       = $SMSC_Number;
                 $out['number']                     = $sender_number;
-                $out['toa']                        = $sender_typeOfAddress." ".$this->explain_toa($sender_typeOfAddress);
+				//$out['toa']      		           = $sender_typeOfAddress." ".$this->explain_toa($sender_typeOfAddress);
+				$out['toa']							= $sender_typeOfAddress;
+				$out['toaDesc']      		       = $this->explain_toa($sender_typeOfAddress);
                 $out['messageRef']                 = $MessageReference;
                 $out['timeStamp']                  = $timeStamp;
-                $out['timeStampTimeZone']          = $this->decode_timezone($timezone);
+                //$out['timeStampTimeZone']          = $this->decode_timezone($timezone);
                 $out['dischargeTimestamp']         = $timeStamp2;
                 $out['dischargeTimestampTimeZone'] = $this->decode_timezone($timezone2);
                 $out['status']                     = $mStatus ." " .$this->explain_status($mStatus);
