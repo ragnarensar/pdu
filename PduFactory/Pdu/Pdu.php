@@ -364,7 +364,7 @@ class Pdu  {
         $out = '';
         for($i=0;$i< $this->strlen($inp);$i=$i+2){
             $temp  = $this->substring($inp,$i,$i+2);
-            $out  .= $this->phoneNumberMap($temp{1}) . $this->phoneNumberMap($temp{0});
+            $out  .= $this->phoneNumberMap($temp[1]) . $this->phoneNumberMap($temp[0]);
         }
         return $out;
     }
@@ -703,7 +703,7 @@ class Pdu  {
         $padding = Utf8::unicodeToUtf8(array(0x0D));
         $info = "";
 
-        if (($septets % 8 == 0 && $len > 0 && $buffer{($len -1)} == $padding) || ($septets % 8 == 1 && $len > 1 && $buffer{($len -1)} == $padding && $buffer{($len -2)} == $padding))
+        if (($septets % 8 == 0 && $len > 0 && $buffer[($len -1)] == $padding) || ($septets % 8 == 1 && $len > 1 && $buffer[($len -1)] == $padding && $buffer[($len -2)] == $padding))
         {
             $buffer = $this->substring($buffer,0, $len -1);
             $info = "<BR><SMALL>( Had $padding which is removed )</SMALL>";
