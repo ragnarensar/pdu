@@ -165,7 +165,7 @@ class Pdu  {
         $total = 0;
         $power = $this->parseInt($this->strlen($x))-1;
         for($i=0; $i < $this->strlen($x); $i++){
-            if($x{$i} == '1'){
+            if($x[$i] == '1'){
                 $total = $total + pow(2,$power);
             }
             $power--;
