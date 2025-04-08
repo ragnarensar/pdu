@@ -248,16 +248,16 @@ class Pdu  {
         $i = $this->parseInt($i);
 
         for($j = 0; $j <= 3; $j++){
-            $h .= $this->hex{($i >> ($j * 8 + 4)) & 0x0F} . $this->hex{($i >> ($j * 8)) & 0x0F};
+            $h .= $this->hex[($i >> ($j * 8 + 4)) & 0x0F] . $this->hex[($i >> ($j * 8)) & 0x0F];
         }
         return $this->substring($h,0,2);
     }
 
     private function ToHex($i){
         $out = "";
-        $out = $this->hex{($i & 0xf)};
+        $out = $this->hex[($i & 0xf)];
         $i >>= 4;
-        $out = $this->hex{($i & 0xf)} . $out;
+        $out = $this->hex[($i & 0xf)] . $out;
         return $out;
     }
 
