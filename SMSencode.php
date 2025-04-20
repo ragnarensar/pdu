@@ -19,13 +19,16 @@ $longopts  = array(
     "receipt:",			// true / false
 );
 
-$PDUelements=array();
+$args=array();
+foreach(getopt("", $longopts) as $key => $value) $args[$key] = $value;
 
-foreach(getopt("", $longopts) as $key => $value) $PDUelements[$key] = $value;
+if (array_key_exists('format', $args) && $args['format'] == 'json' && $args['input']) {
+    $args = json_decode($args['input'],JSON_UNESCAPED_UNICODE);
+}
 
 $output=array();
 
-$output=$SMSencode->encode($PDUelements);
+$output=$SMSencode->encode($args);
 
 echo $output['byte_size']." ".$output['message']."\n";
 ?>
